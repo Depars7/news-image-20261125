@@ -101,7 +101,14 @@ def main():
     # ---- 2. masthead + double rule --------------------------------------
     f_mast = F_DISPLAY(76)
     assert f_mast.getlength("THE WORLD DISPATCH") <= W - 2 * M, "masthead too wide"
-    text(d, (W // 2, 44), "THE WORLD DISPATCH", f_mast, anchor="ma")
+    # Centre the masthead ink in the band between the ticker rule (y=36)
+    # and the double rule (y=128), biased 2px up: the old y=44 put the caps'
+    # baseline 1px above the rule. textbbox measures the real ink box, so
+    # this stays centred even if the font changes.
+    _bb = d.textbbox((0, 0), "THE WORLD DISPATCH", f_mast, anchor="la")
+    _ink_h = _bb[3] - _bb[1]
+    _ink_top = 36 + (128 - 36 - _ink_h) // 2 - 2
+    text(d, (W // 2, _ink_top - _bb[1]), "THE WORLD DISPATCH", f_mast, anchor="ma")
     rule(d, M, RIGHT, 128, width=3)
     rule(d, M, RIGHT, 133, width=1)
 
